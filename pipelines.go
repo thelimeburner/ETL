@@ -1,11 +1,32 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"strings"
 	"time"
 )
+
+//processLogFile takes in an uploaded logfile, stores the data, processes stats.
+func processLogFile(rawLogFile []byte) bool {
+	var lines []string
+	scanner := bufio.NewScanner(strings.NewReader(string(rawLogFile)))
+	// scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	logFile := parseFile(lines)
+
+	//Store parsed logs
+	LogStore.StoreLogLine(logFile)
+
+	countVisitors(LogStore)
+	countBrowsers(LogStore)
+
+	return true
+}
 
 //parseBrowser parses user agent
 func parseBrowser(ua string) string {

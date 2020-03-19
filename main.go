@@ -50,10 +50,10 @@ func (l *LogLine) Print() {
 }
 
 func main() {
-	// lines := readFile("log_a.txt")
-	lines := readFile("jumbo_log.txt")
-	//fmt.Println(lines[0])
-	logFile := parseFile(lines)
+	// // lines := readFile("log_a.txt")
+	// lines := readFile("jumbo_log.txt")
+	// //fmt.Println(lines[0])
+	// logFile := parseFile(lines)
 
 	//Start DB connection
 	LogStore = Database{}
@@ -67,15 +67,12 @@ func main() {
 	//Create table if not found
 	LogStore.dbInit()
 
-	//Store parsed logs
-	LogStore.StoreLogLine(logFile)
-
-	countVisitors(LogStore)
-	countBrowsers(LogStore)
-
 	r := mux.NewRouter()
-	r.HandleFunc("/browser/count", BasicAuth(handleBrowserCount, "harry", "potter", "Please enter your username and password for this site")).Methods("GET")
-	r.HandleFunc("/visitor/count", BasicAuth(handleVisitorCount, "harry", "potter", "Please enter your username and password for this site")).Methods("GET")
+	r.HandleFunc("/browser/count", BasicAuth(handleBrowserCount, "read", "Please enter your username and password for this site")).Methods("GET")
+	r.HandleFunc("/visitor/count", BasicAuth(handleVisitorCount, "read", "Please enter your username and password for this site")).Methods("GET")
+	r.HandleFunc("/", BasicAuth(handleServeUploadPage, "write", "Please enter your username and password for this site"))
+	r.HandleFunc("/upload/log", BasicAuth(handleUploadLog, "write", "Please enter your username and password for this site"))
+
 	http.ListenAndServe(":8000", r)
 }
 

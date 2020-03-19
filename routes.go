@@ -4,6 +4,7 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -17,11 +18,11 @@ func fetchAcceptType(header string) string {
 }
 
 //BasicAuth handles authentication for username and password
-func BasicAuth(handler http.HandlerFunc, username, password, realm string) http.HandlerFunc {
+func BasicAuth(handler http.HandlerFunc, perm, realm string) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		users := LogStore.fetchUserAuth("read")
+		users := LogStore.fetchUserAuth(perm)
 
 		user, pass, ok := r.BasicAuth()
 
@@ -88,4 +89,46 @@ func handleVisitorCount(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, string(jOut))
+}
+
+//handleServeUploadPage serves the static html file
+func handleServeUploadPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./html/upload.html")
+}
+
+//handleUploadLog handles uploading of log file and triggers etl pipeline
+func handleUploadLog(w http.ResponseWriter, r *http.Request) {
+	// Parse our multipart form, 10 << 20 specifies a maximum
+	// upload of 10 MB files.
+	r.ParseMultipartForm(10 << 20)
+
+	// FormFile returns the first file for the given key `myFile`
+	// it also returns the FileHeader so we can get the Filename,
+	// the Header and the size of the file
+	file, handler, err := r.FormFile("myFile")
+	if err != nil {
+		fmt.Println("Error Retrieving the File")
+		fmt.Println(err)
+		return
+	}
+
+	defer file.Close()
+	fmt.Printf("Received Uploaded File: %+v\n", handler.Filename)
+	// fmt.Printf("File Size: %+v\n", handler.Size)
+	// fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+	// read all of the contents of our uploaded file into a
+	// byte array
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//fmt.Println("File Contents", string(fileBytes))
+
+	// return that we have successfully uploaded our file!
+	//fmt.Fprintf(w, "Successfully Uploaded File\n")
+	processLogFile(fileBytes)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Log File Uploaded Successfully")
 }
