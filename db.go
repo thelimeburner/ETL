@@ -270,4 +270,15 @@ func (d *Database) dbInit() {
 	statement, _ = d.db.Prepare(sqlStmt)
 	statement.Exec()
 
+	//create browser table
+	sqlStmt = `
+	CREATE TABLE IF NOT EXISTS lineCount (
+		key TEXT,
+		count int
+		)
+	`
+
+	statement, _ = d.db.Prepare(sqlStmt)
+	statement.Exec()
+
 }

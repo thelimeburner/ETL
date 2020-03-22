@@ -50,10 +50,6 @@ func (l *LogLine) Print() {
 }
 
 func main() {
-	// // lines := readFile("log_a.txt")
-	// lines := readFile("jumbo_log.txt")
-	// //fmt.Println(lines[0])
-	// logFile := parseFile(lines)
 
 	//Start DB connection
 	LogStore = Database{}
@@ -111,13 +107,11 @@ func readFile(name string) []string {
 func parseFile(lines []string) LogFile {
 
 	//list to store log lines
-	//logLines := []LogLine{}
 	lf := LogFile{}
 
 	for _, line := range lines {
 
 		lineSplit := strings.Split(line, " ")
-		// fmt.Println(lineSplit[0])
 		userAgent := strings.Join(lineSplit[11:], " ")
 		status, _ := strconv.Atoi(lineSplit[8])
 		totalBytes, _ := strconv.Atoi(lineSplit[9])
@@ -134,7 +128,6 @@ func parseFile(lines []string) LogFile {
 			time.Now(),
 		}
 
-		// logLines = append(logLines, tempLine)
 		lf.Logs = append(lf.Logs, tempLine)
 	}
 	return lf

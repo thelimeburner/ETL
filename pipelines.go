@@ -12,7 +12,7 @@ import (
 func processLogFile(rawLogFile []byte) bool {
 	var lines []string
 	scanner := bufio.NewScanner(strings.NewReader(string(rawLogFile)))
-	// scanner.Split(bufio.ScanWords)
+
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
@@ -64,6 +64,7 @@ func countBrowsers(LogStore Database) {
 	}
 	//place to store IP's
 	browserCounts := make(map[string]int)
+
 	//iterate and store IP addresses uniquely.
 	for index, b := range browsers {
 		key := b + "_" + visitTimes[index].Format("02-01-2006")
@@ -74,7 +75,7 @@ func countBrowsers(LogStore Database) {
 	}
 
 	for b, v := range browserCounts {
-		//fmt.Println(b, ": ", v)
+
 		keyPieces := strings.Split(b, "_")
 		if !LogStore.storeBrowserCount(b, keyPieces[1], keyPieces[0], v) {
 			fmt.Println("Failed to store ", b)

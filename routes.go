@@ -37,6 +37,8 @@ func BasicAuth(handler http.HandlerFunc, perm, realm string) http.HandlerFunc {
 		w.Header().Set("WWW-Authenticate", `Basic realm="`+realm+`"`)
 		w.WriteHeader(401)
 		w.Write([]byte("Unauthorised.\n"))
+
+		//MoDIFY
 		return
 	}
 }
@@ -46,7 +48,7 @@ func handleBrowserCount(w http.ResponseWriter, r *http.Request) {
 	browserData := LogStore.fetchBrowserData()
 
 	browserStats := make(map[string]int)
-	//fmt.Println(browserStats)
+
 	for _, v := range browserData {
 		if _, ok := browserStats[v.Browser]; !ok {
 			browserStats[v.Browser] = 0
@@ -54,10 +56,7 @@ func handleBrowserCount(w http.ResponseWriter, r *http.Request) {
 		browserStats[v.Browser] += v.Count
 
 	}
-	// for k, v := range browserStats {
-	// 	fmt.Println(k, ": ", v)
 
-	// }
 	jOut, err := json.Marshal(browserStats)
 	if err != nil {
 		fmt.Println("Error Unmarshalling data", err)
@@ -114,8 +113,6 @@ func handleUploadLog(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 	fmt.Printf("Received Uploaded File: %+v\n", handler.Filename)
-	// fmt.Printf("File Size: %+v\n", handler.Size)
-	// fmt.Printf("MIME Header: %+v\n", handler.Header)
 
 	// read all of the contents of our uploaded file into a
 	// byte array
@@ -127,7 +124,6 @@ func handleUploadLog(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println("File Contents", string(fileBytes))
 
 	// return that we have successfully uploaded our file!
-	//fmt.Fprintf(w, "Successfully Uploaded File\n")
 	processLogFile(fileBytes)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Log File Uploaded Successfully")
