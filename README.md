@@ -2,7 +2,7 @@
 
 
 # Pre-Req Libs
-
+Install dependencies
 ```
 go get github.com/mattn/go-sqlite3
 ```
